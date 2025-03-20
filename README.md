@@ -22,18 +22,6 @@ This repo has not been published to PyPi yet. Currently, you can:
 - Move your work inside this folder or move `pocs_helpers.py` to somewhere relative to your working folder.
 - Feel free to copy the useful code and cite the repo.
 
-## License
-
-The MIT license is applicable to the code in this repository (`LICENSE`). If using the code, please cite:
-```
-@online{fehr2025pocs_helpers,
-  title={Principles of Complex Systems Helpers},
-  author={Ashley Fehr},
-  year={2025},
-  url={https://github.com/amafehr/pocs_helpers}
-}
-```
-
 ## Usage
 
 ```python
@@ -46,5 +34,16 @@ import pocs_helpers as pocs
 - [Complexity science concepts explained](https://complexityexplained.github.io/)
 
 
+## License
+
+The MIT license is applicable to the code in this repository (`LICENSE`). If using the code, please cite:
+```
+@online{fehr2025pocs_helpers,
+  title={Principles of Complex Systems Helpers},
+  author={Ashley Fehr},
+  year={2025},
+  url={https://github.com/amafehr/pocs_helpers}
+}
+```
 <!-- ## Developer notes
 ## Frequent questions or issues -->
