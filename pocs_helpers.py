@@ -11,13 +11,14 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
+from utils import *
+
+
+LAB_MT = get_word_happiness_labmt()
+LAB_MT_DICT = dict(zip(LAB_MT['word'], LAB_MT['happs']))
+
 
 ########## Text handling
-
-# Download a language version from https://hedonometer.org/words/labMT-en-v1/
-# TODO: read this is from the web instead of downlaod
-LAB_MT = pd.read_csv('data/labmt.csv')
-LAB_MT_DICT = dict(zip(LAB_MT['Word'], LAB_MT['Happiness Score']))
 
 
 def slice_into_windows(time_series_text_tokens: list, window_size: int) -> list:
@@ -26,35 +27,6 @@ def slice_into_windows(time_series_text_tokens: list, window_size: int) -> list:
     """
     return [time_series_text_tokens[i:i + window_size]
             for i in range(0, len(time_series_text_tokens), window_size)]
-
-
-# all np operations did not speed this up--if running on windows, get an
-# array of time series happiness scores filtered and run calc_avg_happiness
-# on windows
-# TODO: generalzie and update function for above (or add note that in practice, it is much faster (x10) to adapte
-# this analysis to run the first part 1 time on the entire book THEN cut into windows
-# rather than piping each window into this function)
-def calc_avg_happiness(book_df: pd.DataFrame, lens_diff: list) -> float:
-    """Calculate the average happiness of a book.
-
-    Args:
-    book_df: must have word col.
-    lens_diff: amount to subtract or add from 5 for the happiness score lens.
-
-    Notes:
-    - cite https://doi.org/10.1007/s10902-009-9150-9
-    """
-    book_df['word'] = book_df['word'].str.lower()  # makes more matches when made lowercase
-    book_df['value'] = book_df['word'].map(LAB_MT_DICT).fillna(0)
-    mask = (book_df['value'] > 0) & ((book_df['value'] <= 5 - lens_diff[0]) | (book_df['value'] >= 5 + lens_diff[1]))
-    combo_subset = book_df.loc[mask]
-
-    # Calculate the weighted average happiness score
-    weighted_sum = (combo_subset['f'] * combo_subset['value']).sum()
-    total_frequency = combo_subset['f'].sum()
-
-    # catches divide by 0 error if it exists
-    return weighted_sum / total_frequency if total_frequency != 0 else 0
 
 
 def clean_and_tokenize(long_txt):
@@ -121,6 +93,37 @@ def get_set_of_words(list_of_tokens: list) -> set:
     return word_set
 
 
+########## Calculations
+
+# all np operations did not speed this up--if running on windows, get an
+# array of time series happiness scores filtered and run calc_avg_happiness
+# on windows
+# TODO: generalzie and update function for above (or add note that in practice, it is much faster (x10) to adapte
+# this analysis to run the first part 1 time on the entire book THEN cut into windows
+# rather than piping each window into this function)
+def calc_avg_happiness(book_df: pd.DataFrame, lens_diff: list) -> float:
+    """Calculate the average happiness of a book.
+
+    Args:
+    book_df: must have word col.
+    lens_diff: amount to subtract or add from 5 for the happiness score lens.
+
+    Notes:
+    - cite https://doi.org/10.1007/s10902-009-9150-9
+    """
+    book_df['word'] = book_df['word'].str.lower()  # makes more matches when made lowercase
+    book_df['value'] = book_df['word'].map(LAB_MT_DICT).fillna(0)
+    mask = (book_df['value'] > 0) & ((book_df['value'] <= 5 - lens_diff[0]) | (book_df['value'] >= 5 + lens_diff[1]))
+    combo_subset = book_df.loc[mask]
+
+    # Calculate the weighted average happiness score
+    weighted_sum = (combo_subset['f'] * combo_subset['value']).sum()
+    total_frequency = combo_subset['f'].sum()
+
+    # catches divide by 0 error if it exists
+    return weighted_sum / total_frequency if total_frequency != 0 else 0
+
+
 def calculate_linear_model(x: np.ndarray, y: np.ndarray) -> tuple:
     """Calculate a linear regression model given array-like variables."""
     model = stats.linregress(x, y)
@@ -141,6 +144,9 @@ def make_df_freq_rank(tokens: list) -> pd.DataFrame:
     df['rank_ties'] = df['f'].rank(method='average', ascending=False)
 
     return df
+
+
+########## Visualization
 
 
 # TODO: generalize this

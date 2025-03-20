@@ -38,7 +38,7 @@ import pocs_helpers as pocs
 
 The MIT license is applicable to the code in this repository (`LICENSE`). If using the code, please cite:
 ```
-@online{fehr2025pocs_helpers,
+@misc{fehr2025pocs_helpers,
   title={Principles of Complex Systems Helpers},
   author={Ashley Fehr},
   year={2025},
