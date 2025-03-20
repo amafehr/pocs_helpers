@@ -1,6 +1,8 @@
 # POCS Helpers
 
-POCS helpers were inspired by courses at University of Vermont: Principles of Complex systems and Modeling Complex Systems. The helpers in this repo apply repeatable complex systems methods; they are not meant to be wrappers or black boxes around black boxes---rather, they provide snippets that point to a standardized way to study complex systems principles.
+POCS helpers were inspired by courses at University of Vermont: Principles of Complex systems and Modeling Complex Systems. The helpers in this repo apply repeatable complex systems methods; they are not meant to be wrappers or black boxes around black boxes--rather, they provide snippets that offer a standardized way to study complex systems principles.
+
+These helpers include methods on wranging text and tokens, calculating frequency and rank of types, a tidy linear regression, among others to come.
 
 *Repo and Documentation is **heavily** under development*
 
@@ -16,8 +18,9 @@ Table of contents:
 ## Installation
 
 This repo has not been published to PyPi yet. Currently, you can:
-1. Clone the repo
-1. Move your work inside this folder or move `pocs_helpers.py` to somewhere relative to your working folder.
+- Clone the repo
+- Move your work inside this folder or move `pocs_helpers.py` to somewhere relative to your working folder.
+- Feel free to copy the useful code and cite the repo.
 
 ## License
 
@@ -39,7 +42,7 @@ import pocs_helpers as pocs
 
 ## Resources
 - [Principles of Complex Systems courses](https://pdodds.w3.uvm.edu/teaching/courses/2024-2025pocsverse/) in their entirety, taught by Peter Sheridan Dodds
-- [Statistical Laws in Complex Systems](https://arxiv.org/abs/2407.19874) reference good by Eduardo Altmann
+- [Statistical Laws in Complex Systems](https://arxiv.org/abs/2407.19874) reference text by Eduardo Altmann
 - [Complexity science concepts explained](https://complexityexplained.github.io/)
 
 

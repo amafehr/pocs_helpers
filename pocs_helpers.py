@@ -1,4 +1,7 @@
-"""Common helper functions for complex systems analses."""
+"""Common helper functions for complex systems analyses."""
+# TODO: implement type hints everywhere
+# TODO: more robust documentation
+
 import re
 from collections import Counter
 
@@ -8,16 +11,19 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
+
+########## Text handling
+
 # Download a language version from https://hedonometer.org/words/labMT-en-v1/
 # TODO: read this is from the web instead of downlaod
 LAB_MT = pd.read_csv('data/labmt.csv')
 LAB_MT_DICT = dict(zip(LAB_MT['Word'], LAB_MT['Happiness Score']))
 
 
-def slice_into_windows(time_series_text_tokens: list, window_size):
-    """Slice a list of text tokens into windows according to a window size.
+def slice_into_windows(time_series_text_tokens: list, window_size: int) -> list:
+    """Slice a list of text tokens (in time series order) into windows
+    according to a window size.
     """
-    window_size = int(window_size)
     return [time_series_text_tokens[i:i + window_size]
             for i in range(0, len(time_series_text_tokens), window_size)]
 
@@ -25,7 +31,7 @@ def slice_into_windows(time_series_text_tokens: list, window_size):
 # all np operations did not speed this up--if running on windows, get an
 # array of time series happiness scores filtered and run calc_avg_happiness
 # on windows
-# TODO: update function for that (or add note that in practice, it is much faster (x10) to adapte
+# TODO: generalzie and update function for above (or add note that in practice, it is much faster (x10) to adapte
 # this analysis to run the first part 1 time on the entire book THEN cut into windows
 # rather than piping each window into this function)
 def calc_avg_happiness(book_df: pd.DataFrame, lens_diff: list) -> float:
@@ -52,9 +58,12 @@ def calc_avg_happiness(book_df: pd.DataFrame, lens_diff: list) -> float:
 
 
 def clean_and_tokenize(long_txt):
-    """Clean and tokenize an unprocessed UTF-8 text read from a text file.
+    """Clean and tokenize an unprocessed UTF-8 text read from a text file
+    (Ex: a Gutenburg book).
 
-    helpful: https://regex101.com/
+    Notes:
+    - https://regex101.com/ is helpful to check what the regex pattern does.
+    - rules should be slightly adapted per text (see Frankenstein example).
     """
     # Remove underscores
     long_txt = re.sub(r"\_([^_]+)\_", r"\1", long_txt)
@@ -94,6 +103,7 @@ def clean_and_tokenize(long_txt):
     # \$[\d\.]+ matches a dollar sign followed by digits and/or decimal points
     # \S+\' matches any non-whitespace character followed by a single quote (apostrophe)
     # [^\w\s] anything that is not a word character and not whitespace
+    # TODO: nltk is not really necessary here--tokenize without this? removes a dependency.
     tokenizer = nltk.tokenize.RegexpTokenizer(r"\w+|\$[\d\.]+|\S+\'|[^\w\s]")
     tokens = tokenizer.tokenize(long_txt)
     # replace 'DASH' with '---'
@@ -102,17 +112,26 @@ def clean_and_tokenize(long_txt):
     return tokens
 
 
+def get_set_of_words(list_of_tokens: list) -> set:
+    """Get a set of all unique words in the document."""
+    word_set = set()
+    for token in list_of_tokens:
+        word_set.add(token)
+
+    return word_set
+
+
 def calculate_linear_model(x: np.ndarray, y: np.ndarray) -> tuple:
     """Calculate a linear regression model given array-like variables."""
     model = stats.linregress(x, y)
     sd_slope = model.stderr  # standard error of the slope
     r2 = model.rvalue ** 2
 
-    return model, r2, sd_slope  # model.coef provides the slope
+    return model, r2, sd_slope  # model.slope provides the slope/coefficient
 
 
 def make_df_freq_rank(tokens: list) -> pd.DataFrame:
-    """Takes a list of tokens (such as a book) and turns it into a dataframe
+    """Takes a list of tokens (such as a book) and makes a dataframe
     with frequency and rank columns.
     """
     # get word frequencies (much faster than nltk.FreqDist(tokens))
@@ -124,6 +143,7 @@ def make_df_freq_rank(tokens: list) -> pd.DataFrame:
     return df
 
 
+# TODO: generalize this
 def plot_size_rank(df, color='blue'):
     """Plot size rank."""
     plt.scatter(
@@ -137,7 +157,8 @@ def plot_size_rank(df, color='blue'):
 
 
 # TODO:
+# add some text manipulations
 # heaps law function (take funcs from convo_analyzer)
 # yule coefficients of 2 bodies (we did this in Dsci but not sure if it's good practice)
-# SVD end-to-end example (matrix-ify, investigate results, visualize top contributes by axis and pole)
+# SVD end-to-end example (matrix-ify, investigate results, visualize top contributors by axis and pole)
 # get recs from other people
