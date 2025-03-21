@@ -1,5 +1,4 @@
 """Common helper functions for complex systems analyses."""
-# TODO: implement type hints everywhere
 # TODO: more robust documentation
 
 import re
@@ -21,7 +20,7 @@ LAB_MT_DICT = dict(zip(LAB_MT['word'], LAB_MT['happs']))
 
 ########## Text handling
 
-def get_gutenburg_text(url: str):
+def get_gutenburg_text(url: str) -> str:
     """Get a text (book) from Project Gutenburg (https://www.gutenberg.org/)
 
     Args:
@@ -36,14 +35,18 @@ def get_gutenburg_text(url: str):
     return long_txt
 
 
-def read_text_from_file(path: str):
+def read_text_from_file(path: str) -> str:
     """Read a text file from its local path."""
     long_txt = open(path, encoding='utf-8').read()
     return long_txt
 
 
 def read_text_file_as_list(path: str) -> list:
-    """Read a local text file from path into a list"""
+    """Read a local text file from path into a raw time series token list.
+
+    Note:
+    Does not apply advanced token rules--only provides list the user is providing.
+    """
     # read in text file as a list
     with open(path, 'r') as f:
         text_list = f.read().splitlines()
@@ -53,12 +56,16 @@ def read_text_file_as_list(path: str) -> list:
 def slice_into_windows(time_series_text_tokens: list, window_size: int) -> list:
     """Slice a list of text tokens (in time series order) into windows
     according to a window size.
+
+    Args:
+    time_series_text_tokens: a list of tokens.
+    window_size: number of tokens to include in window.
     """
     return [time_series_text_tokens[i:i + window_size]
             for i in range(0, len(time_series_text_tokens), window_size)]
 
 
-def clean_and_tokenize(long_txt):
+def clean_and_tokenize(long_txt: str) -> list:
     """Clean and tokenize an unprocessed UTF-8 text read from a text file
     (Ex: a Gutenburg book).
 
@@ -178,7 +185,7 @@ def make_df_freq_rank(tokens: list) -> pd.DataFrame:
 ########## Visualization
 
 # TODO: generalize this
-def plot_size_rank(df, color='blue'):
+def plot_size_rank(df: pd.DataFrame, color: str = 'blue'):
     """Plot size rank."""
     plt.scatter(
         df['log_rank_ties'],
