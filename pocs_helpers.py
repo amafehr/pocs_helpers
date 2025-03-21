@@ -3,6 +3,7 @@
 # TODO: more robust documentation
 
 import re
+import urllib.request
 from collections import Counter
 
 import matplotlib.pyplot as plt
@@ -10,15 +11,43 @@ import nltk
 import numpy as np
 import pandas as pd
 from scipy import stats
+from utils import get_word_happiness_labmt
 
-from utils import *
-
+# Globals
 
 LAB_MT = get_word_happiness_labmt()
 LAB_MT_DICT = dict(zip(LAB_MT['word'], LAB_MT['happs']))
 
 
 ########## Text handling
+
+def get_gutenburg_text(url: str):
+    """Get a text (book) from Project Gutenburg (https://www.gutenberg.org/)
+
+    Args:
+    url: must navigate to the .txt version of the book
+
+    Note:
+    - Alternatively, copy and paste from that URL into a file and use the load_text function
+    """
+    # Download the corpus
+    response = urllib.request.urlopen(url)
+    long_txt = response.read().decode('utf8')
+    return long_txt
+
+
+def read_text_from_file(path: str):
+    """Read a text file from its local path."""
+    long_txt = open(path, encoding='utf-8').read()
+    return long_txt
+
+
+def read_text_file_as_list(path: str) -> list:
+    """Read a local text file from path into a list"""
+    # read in text file as a list
+    with open(path, 'r') as f:
+        text_list = f.read().splitlines()
+    return text_list
 
 
 def slice_into_windows(time_series_text_tokens: list, window_size: int) -> list:
@@ -147,7 +176,6 @@ def make_df_freq_rank(tokens: list) -> pd.DataFrame:
 
 
 ########## Visualization
-
 
 # TODO: generalize this
 def plot_size_rank(df, color='blue'):
