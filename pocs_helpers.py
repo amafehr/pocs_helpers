@@ -134,7 +134,7 @@ def get_set_of_words(list_of_tokens: list) -> set:
 # all np operations did not speed this up--if running on windows, get an
 # array of time series happiness scores filtered and run calc_avg_happiness
 # on windows
-# TODO: generalzie and update function for above (or add note that in practice, it is much faster (x10) to adapte
+# TODO: generalize and update function for above (or add note that in practice, it is much faster (x10) to adapt
 # this analysis to run the first part 1 time on the entire book THEN cut into windows
 # rather than piping each window into this function)
 def calc_avg_happiness(book_df: pd.DataFrame, lens_diff: list) -> float:
@@ -202,4 +202,8 @@ def plot_size_rank(df: pd.DataFrame, color: str = 'blue'):
 # heaps law function (take funcs from convo_analyzer)
 # yule coefficients of 2 bodies (we did this in Dsci but not sure if it's good practice)
 # SVD end-to-end example (matrix-ify, investigate results, visualize top contributors by axis and pole)
-# get recs from other people
+# distribution exploration (battery of ways to look at)
+# CDF
+# CCDF
+# shifterator plot wrapper?
+# JSD to compare distribs
