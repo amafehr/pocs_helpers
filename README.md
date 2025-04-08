@@ -1,8 +1,8 @@
 # POCS Helpers
 
-POCS helpers were inspired by courses at University of Vermont: Principles of Complex systems and Modeling Complex Systems. The helpers in this repo apply repeatable complex systems methods; they are not meant to be wrappers or black boxes around black boxes--rather, they provide snippets that offer a standardized way to study complex systems principles.
+POCS helpers were inspired by courses at University of Vermont: Principles of Complex systems and Modeling Complex Systems. The helpers in this repo apply repeatable complex systems methods; they are not meant to be wrappers around black boxes--rather, they provide snippets that offer a standardized way to study complex systems principles.
 
-These helpers include methods on wranging text and tokens, calculating frequency and rank of types, a tidy linear regression, among others to come.
+Theses helpers include methods on wranging text and tokens, calculating frequency and rank of types, exploring distributions, a tidy linear regression, among others.
 
 *Repo and Documentation is **heavily** under development*
 
