@@ -200,6 +200,9 @@ def plot_size_rank(df: pd.DataFrame, color: str = 'blue'):
 # TODO:
 # add some text manipulations
 # heaps law function (take funcs from convo_analyzer)
+# add ways we explore/view raw data, such as:
+    # Get keyword frequencies (make a function that just applies Counter to get a freq list of any text)
+    # Maybe 2-3 gram and cut it off at top 50 phrases showing up
 # yule coefficients of 2 bodies (we did this in Dsci but not sure if it's good practice)
 # SVD end-to-end example (matrix-ify, investigate results, visualize top contributors by axis and pole)
 # distribution exploration (battery of ways to look at)

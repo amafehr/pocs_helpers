@@ -29,7 +29,7 @@ import pocs_helpers as pocs
 ```
 
 ## Resources
-- [Principles of Complex Systems courses](https://pdodds.w3.uvm.edu/teaching/courses/2024-2025pocsverse/) in their entirety, taught by Peter Sheridan Dodds
+- [Principles of Complex Systems courses](https://pdodds.w3.uvm.edu/teaching/courses/2024-2025pocsverse/) in their entirety (slides and links to video lectures), taught by Peter Sheridan Dodds
 - [Statistical Laws in Complex Systems](https://arxiv.org/abs/2407.19874) reference text by Eduardo Altmann
 - [Complexity science concepts explained](https://complexityexplained.github.io/)
 
