@@ -21,13 +21,14 @@ LAB_MT_DICT = dict(zip(LAB_MT['word'], LAB_MT['happs']))
 ########## Text handling
 
 def get_gutenburg_text(url: str) -> str:
-    """Get a text (book) from Project Gutenburg (https://www.gutenberg.org/)
+    """Get a text (book) from Project Gutenburg (https://www.gutenberg.org/).
 
     Args:
     url: must navigate to the .txt version of the book
 
     Note:
-    - Alternatively, copy and paste from that URL into a file and use the load_text function
+    - Alternatively, copy and paste from that URL into a .txt file and use the
+    load_text function.
     """
     # Download the corpus
     response = urllib.request.urlopen(url)
@@ -35,20 +36,27 @@ def get_gutenburg_text(url: str) -> str:
     return long_txt
 
 
-def read_text_from_file(path: str) -> str:
-    """Read a text file from its local path."""
-    long_txt = open(path, encoding='utf-8').read()
+def read_text_from_file(file_path: str) -> str:
+    """Read a text file from its local path.
+
+    Args:
+    file_path: the local path where the text file is located.
+    """
+    long_txt = open(file_path, encoding='utf-8').read()
     return long_txt
 
 
-def read_text_file_as_list(path: str) -> list:
+def read_text_file_as_list(file_path: str) -> list:
     """Read a local text file from path into a raw time series token list.
 
+    Args:
+    file_path: the local path where the text file is located.
+
     Note:
-    Does not apply advanced token rules--only provides list the user is providing.
+    - Does not apply advanced token cleaning rules.
     """
     # read in text file as a list
-    with open(path, 'r') as f:
+    with open(file_path, 'r') as f:
         text_list = f.read().splitlines()
     return text_list
 
@@ -58,7 +66,7 @@ def slice_into_windows(time_series_text_tokens: list, window_size: int) -> list:
     according to a window size.
 
     Args:
-    time_series_text_tokens: a list of tokens.
+    time_series_text_tokens: a list of tokens in chronological/time series order.
     window_size: number of tokens to include in window.
     """
     return [time_series_text_tokens[i:i + window_size]
@@ -68,6 +76,9 @@ def slice_into_windows(time_series_text_tokens: list, window_size: int) -> list:
 def clean_and_tokenize(long_txt: str) -> list:
     """Clean and tokenize an unprocessed UTF-8 text read from a text file
     (Ex: a Gutenburg book).
+
+    Args:
+    long_txt: a string representing the entire text contents (e.g., of a book).
 
     Notes:
     - https://regex101.com/ is helpful to check what the regex pattern does.
@@ -120,11 +131,20 @@ def clean_and_tokenize(long_txt: str) -> list:
     return tokens
 
 
-def get_set_of_words(list_of_tokens: list) -> set:
-    """Get a set of all unique words in the document."""
+def get_set_of_words(list_of_tokens: list, get_frequencies=False) -> set:
+    """Get a set of all unique words in the document.
+
+    Args:
+    list_of_tokens:
+    get_frequencies: False by default. Set to True to get a Counter object (like
+    a dictionary) of the unique set of words and their frequencies.
+    """
     word_set = set()
     for token in list_of_tokens:
         word_set.add(token)
+
+    if get_frequencies:
+        word_set = Counter(list_of_tokens)
 
     return word_set
 
@@ -161,7 +181,12 @@ def calc_avg_happiness(book_df: pd.DataFrame, lens_diff: list) -> float:
 
 
 def calculate_linear_model(x: np.ndarray, y: np.ndarray) -> tuple:
-    """Calculate a linear regression model given array-like variables."""
+    """Calculate a linear regression model given array-like variables.
+
+    Args:
+    x: a variable in numpy array format.
+    y: a variable in numpy array format.
+    """
     model = stats.linregress(x, y)
     sd_slope = model.stderr  # standard error of the slope
     r2 = model.rvalue ** 2
@@ -170,8 +195,11 @@ def calculate_linear_model(x: np.ndarray, y: np.ndarray) -> tuple:
 
 
 def make_df_freq_rank(tokens: list) -> pd.DataFrame:
-    """Takes a list of tokens (such as a book) and makes a dataframe
+    """Takes tokens (such as a book) and makes a dataframe
     with frequency and rank columns.
+
+    Args:
+    tokens: a list of tokens (e.g., words in a book's text data).
     """
     # get word frequencies (much faster than nltk.FreqDist(tokens))
     word_freq = Counter(tokens)
@@ -184,9 +212,14 @@ def make_df_freq_rank(tokens: list) -> pd.DataFrame:
 
 ########## Visualization
 
-# TODO: generalize this
+# TODO: generalize this and change col names
 def plot_size_rank(df: pd.DataFrame, color: str = 'blue'):
-    """Plot size rank."""
+    """Plot size rank.
+
+    Args:
+    df: a dataframe containing the columns 'log_rank_ties' and 'log_size'
+    color: optional (set to blue by default).
+    """
     plt.scatter(
         df['log_rank_ties'],
         df['log_size'],
@@ -201,7 +234,6 @@ def plot_size_rank(df: pd.DataFrame, color: str = 'blue'):
 # add some text manipulations
 # heaps law function (take funcs from convo_analyzer)
 # add ways we explore/view raw data, such as:
-    # Get keyword frequencies (make a function that just applies Counter to get a freq list of any text)
     # Maybe 2-3 gram and cut it off at top 50 phrases showing up
 # yule coefficients of 2 bodies (we did this in Dsci but not sure if it's good practice)
 # SVD end-to-end example (matrix-ify, investigate results, visualize top contributors by axis and pole)
