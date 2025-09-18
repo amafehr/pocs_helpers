@@ -230,7 +230,41 @@ def plot_size_rank(df: pd.DataFrame, color: str = 'blue'):
     # plt.title('Size-rank plot')
 
 
+def burstiness_cv(data):
+    """coefficient of variation of inter-arrival times (Altmann et al., 2009).
+
+    CV or B gives a measure of burstiness, with -1 < B < 1.
+    B > 0 indicates bursty behavior (nouns), B < 0 indicates more regular behavior
+    than random (determiners), and B = 0 indicates a Poisson process.
+    """
+    mean = np.mean(data)
+    sd = np.std(data)
+    cv = (sd - mean) / (sd + mean)
+
+    return cv
+
+
+def memory_m(data):
+    """memory measure of inter-arrival times (Altmann et al., 2009). Tests if gaps
+    are independent or show memory.
+
+    A positive M indicates long waits tend to be followed by long waits. Negative M
+    means alternation between long and short waits. M = 0 indicates no memory (Poisson).
+    """
+    taus = np.array(data)
+    if len(taus) < 2:
+        return np.nan
+    mean = np.mean(taus)
+    numerator = np.sum((taus[:-1] - mean) * (taus[1:] - mean))
+    denominator = len(taus - 1) * (np.std(taus) ** 2)
+    if denominator == 0:
+        return np.nan
+    m = numerator / denominator
+    return m
+
+
 # TODO:
+# Add functions to explore temporal distributions of words (Altmann et al., 2009)... refine the burstiness and memory functions (these are rough first drafts)
 # add some text manipulations
 # heaps law function (take funcs from convo_analyzer)
 # add ways we explore/view raw data, such as:
