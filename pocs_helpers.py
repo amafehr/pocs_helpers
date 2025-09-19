@@ -3,7 +3,7 @@
 
 import re
 import urllib.request
-from collections import Counter
+from collections import Counter, defaultdict
 
 import matplotlib.pyplot as plt
 import nltk
@@ -161,7 +161,7 @@ def calc_avg_happiness(book_df: pd.DataFrame, lens_diff: list) -> float:
     """Calculate the average happiness of a book.
 
     Args:
-    book_df: must have word col.
+    book_df: must have 'wor'd col.
     lens_diff: amount to subtract or add from 5 for the happiness score lens.
 
     Notes:
@@ -231,12 +231,11 @@ def diffs_total_tokens(tokens):
     return counts
 
 
-# TODO: review article and refine these.
 def burstiness_b(data: np.array) -> float:
     """Variation of inter-arrival times over a data series (Goh & Barbasi, 2008;
     see also Altmann et al., 2009).
 
-    B gives a measure of burstiness, with -1 < B < 1.
+    B (burstiness) gives a measure of burstiness, with -1 < B < 1.
     B > 0 indicates bursty behavior (nouns), B < 0 indicates more regular behavior
     than random (determiners), and B = 0 indicates a Poisson process.
     """
@@ -269,12 +268,16 @@ def burstiness_per_word(tokens: list) -> dict:
     return burstiness_scores
 
 
+# TODO: double-double-check the application of M formula
 def memory_m(data: np.array) -> float:
-    """memory measure of inter-arrival times (Goh & Barbasi, 2008;
+    """
+    Correlation measure of inter-arrival times (Goh & Barbasi, 2008;
     see also Altmann et al., 2009). Tests if gaps
     are independent or show memory.
 
-    A positive M indicates long waits tend to be followed by long waits. Negative M
+    M (memory) is a correlation-based signal with -1 < M < 1.
+    Positive M indicates long waits tend to be followed by long waits.
+    Negative M
     means alternation between long and short waits. M = 0 indicates no memory (Poisson).
     """
     taus = np.array(data)
@@ -290,7 +293,8 @@ def memory_m(data: np.array) -> float:
 
 
 def coef_of_variation(data):
-    """Provides the coefficient of variation (CV), useful when applied to
+    """
+    Provides the coefficient of variation (CV), useful when applied to
     distributions to get a sense of spread or to see if the distribution (inter-arrival
     times) is Poisson.
 
@@ -326,9 +330,8 @@ def plot_size_rank(df: pd.DataFrame, color: str = 'blue'):
 
 
 # TODO:
-# Add functions to explore temporal distributions of words (Altmann et al., 2009)... refine the burstiness and memory functions (these are rough first drafts)
 # add some text manipulations
-# heaps law function (take funcs from convo_analyzer)
+# heaps law function (take funcs from convo_analyzer--current paper in progress)
 # add ways we explore/view raw data, such as:
     # Maybe 2-3 gram and cut it off at top 50 phrases showing up
 # yule coefficients of 2 bodies (we did this in Dsci but not sure if it's good practice)
