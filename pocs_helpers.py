@@ -210,6 +210,100 @@ def make_df_freq_rank(tokens: list) -> pd.DataFrame:
     return df
 
 
+########## Temporal measures: largely influenced by Goh & Barbasi (2008) and Altmann et al. (2009)
+
+
+def diffs_total_tokens(tokens):
+    """
+    Return the inter-arrival gaps. For each token, you get a list of distances
+    between appearances. This is useful on whole documents or documented subsetted
+    to a category (such as part-of-speech).
+    """
+    unique_tokens = set(tokens)
+    counts = {tok: [] for tok in unique_tokens}
+    last_seen = {}
+
+    for i, tok in enumerate(tokens):
+        if tok in last_seen:
+            counts[tok].append(i - last_seen[tok])
+        last_seen[tok] = i
+
+    return counts
+
+
+# TODO: review article and refine these.
+def burstiness_b(data: np.array) -> float:
+    """Variation of inter-arrival times over a data series (Goh & Barbasi, 2008;
+    see also Altmann et al., 2009).
+
+    B gives a measure of burstiness, with -1 < B < 1.
+    B > 0 indicates bursty behavior (nouns), B < 0 indicates more regular behavior
+    than random (determiners), and B = 0 indicates a Poisson process.
+    """
+    mean = np.mean(data)
+    sd = np.std(data)
+    b = (sd - mean) / (sd + mean)
+
+    return b
+
+
+def burstiness_per_word(tokens: list) -> dict:
+    """
+    Compute burstiness per word type in a sequence of tokens.
+
+    Note: words occuring only twice with have 1 interval (sd=0, mu>0) and thus B=-1, so
+    rare words will stack. Thus, we set the minimum to <= 2, which does filter
+    out rare occurences (<=2 times).
+    """
+    positions = defaultdict(list)
+    for i, tok in enumerate(tokens):
+        positions[tok].append(i)
+
+    burstiness_scores = {}
+    for word, idxs in positions.items():
+        if len(idxs) <= 2:
+            continue
+        intervals = np.diff(idxs)  # inter-arrival times
+        burstiness_scores[word] = burstiness_b(intervals)
+
+    return burstiness_scores
+
+
+def memory_m(data: np.array) -> float:
+    """memory measure of inter-arrival times (Goh & Barbasi, 2008;
+    see also Altmann et al., 2009). Tests if gaps
+    are independent or show memory.
+
+    A positive M indicates long waits tend to be followed by long waits. Negative M
+    means alternation between long and short waits. M = 0 indicates no memory (Poisson).
+    """
+    taus = np.array(data)
+    if len(taus) < 2:
+        return np.nan
+    mean = np.mean(taus)
+    numerator = np.sum((taus[:-1] - mean) * (taus[1:] - mean))
+    denominator = len(taus - 1) * (np.std(taus) ** 2)
+    if denominator == 0:
+        return np.nan
+    m = numerator / denominator
+    return m
+
+
+def coef_of_variation(data):
+    """Provides the coefficient of variation (CV), useful when applied to
+    distributions to get a sense of spread or to see if the distribution (inter-arrival
+    times) is Poisson.
+
+    For a Poisson process, CV should be approximately 1 because variance ≈ mean; also
+    B ≈ 0 and M ≈ 0.
+    """
+    mean = np.mean(data)
+    sd = np.std(data)
+    cv = sd / mean if mean != 0 else np.nan
+
+    return cv
+
+
 ########## Visualization
 
 # TODO: generalize this and change col names
@@ -229,38 +323,6 @@ def plot_size_rank(df: pd.DataFrame, color: str = 'blue'):
     plt.ylabel('Log$_{10}$ (frequency of words)')
     # plt.title('Size-rank plot')
 
-
-def burstiness_cv(data):
-    """coefficient of variation of inter-arrival times (Altmann et al., 2009).
-
-    CV or B gives a measure of burstiness, with -1 < B < 1.
-    B > 0 indicates bursty behavior (nouns), B < 0 indicates more regular behavior
-    than random (determiners), and B = 0 indicates a Poisson process.
-    """
-    mean = np.mean(data)
-    sd = np.std(data)
-    cv = (sd - mean) / (sd + mean)
-
-    return cv
-
-
-def memory_m(data):
-    """memory measure of inter-arrival times (Altmann et al., 2009). Tests if gaps
-    are independent or show memory.
-
-    A positive M indicates long waits tend to be followed by long waits. Negative M
-    means alternation between long and short waits. M = 0 indicates no memory (Poisson).
-    """
-    taus = np.array(data)
-    if len(taus) < 2:
-        return np.nan
-    mean = np.mean(taus)
-    numerator = np.sum((taus[:-1] - mean) * (taus[1:] - mean))
-    denominator = len(taus - 1) * (np.std(taus) ** 2)
-    if denominator == 0:
-        return np.nan
-    m = numerator / denominator
-    return m
 
 
 # TODO:
