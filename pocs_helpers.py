@@ -210,6 +210,26 @@ def make_df_freq_rank(tokens: list) -> pd.DataFrame:
     return df
 
 
+def heaps_from_text(list_of_tokens: list, get_word_set=False) -> tuple:
+    """Using a list of token strings, produce the total and unique vocabulary
+    needed to calculates Heaps' law scaling over a document.
+    """
+    # Tokenization already happened as part of cleaning
+    # hold counts of total words and unique words
+    total_words = np.arange(1, len(list_of_tokens) + 1)
+    unique_num_words = np.zeros(len(list_of_tokens))
+    # Count unique words while progressing through the text
+    word_set = set()
+    for i, token in enumerate(list_of_tokens):
+        word_set.add(token)
+        unique_num_words[i] = len(word_set)
+
+    if get_word_set:
+        return total_words, unique_num_words, word_set
+
+    return total_words, unique_num_words
+
+
 ########## Temporal measures: largely influenced by Goh & Barbasi (2008) and Altmann et al. (2009)
 
 
@@ -268,8 +288,7 @@ def burstiness_per_word(tokens: list) -> dict:
     return burstiness_scores
 
 
-# TODO: double-double-check the application of M formula
-def memory_m(data: np.array) -> float:
+def memory_m(data) -> float:
     """
     Correlation measure of inter-arrival times (Goh & Barbasi, 2008;
     see also Altmann et al., 2009). Tests if gaps
@@ -277,8 +296,8 @@ def memory_m(data: np.array) -> float:
 
     M (memory) is a correlation-based signal with -1 < M < 1.
     Positive M indicates long waits tend to be followed by long waits.
-    Negative M
-    means alternation between long and short waits. M = 0 indicates no memory (Poisson).
+    Negative M means alternation between long and short waits.
+    M = 0 indicates no memory (Poisson).
     """
     taus = np.array(data)
     if len(taus) < 2:
