@@ -19,14 +19,9 @@ Table of contents:
 
 This repo has not been published to PyPi yet. Currently, you can:
 - Clone the repo
-- Move your work inside this folder or move `pocs_helpers.py` to somewhere relative to your working folder.
+- Move your work inside this folder and import pocs_helpers to use the methods.
 - Feel free to copy the useful code and cite the repo.
 
-## Usage
-
-```python
-import pocs_helpers as pocs
-```
 
 ## Resources
 - [Principles of Complex Systems courses](https://pdodds.w3.uvm.edu/teaching/courses/2024-2025pocsverse/) in their entirety (slides and links to video lectures), taught by Peter Sheridan Dodds
@@ -40,7 +35,7 @@ The MIT license is applicable to the code in this repository (`LICENSE`). If usi
 ```
 @misc{fehr2025pocs_helpers,
   title={Principles of Complex Systems Helpers},
-  author={Ashley Fehr},
+  author={Fehr, Ashley M. A.},
   year={2025},
   url={https://github.com/amafehr/pocs_helpers}
 }
