@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import nltk
 import numpy as np
 import pandas as pd
+from numpy.lib.stride_tricks import sliding_window_view
 from scipy import stats
 from utils import get_word_happiness_labmt
 
@@ -161,7 +162,7 @@ def calc_avg_happiness(book_df: pd.DataFrame, lens_diff: list) -> float:
     """Calculate the average happiness of a book.
 
     Args:
-    book_df: must have 'wor'd col.
+    book_df: must have 'word' col.
     lens_diff: amount to subtract or add from 5 for the happiness score lens.
 
     Notes:
@@ -228,6 +229,23 @@ def heaps_from_text(list_of_tokens: list, get_word_set=False) -> tuple:
         return total_words, unique_num_words, word_set
 
     return total_words, unique_num_words
+
+
+def shifting_window_calc(data: np.array, window_size: int) -> np.array:
+    """Calculate a sliding window average over some vector of data.
+
+    Notes:
+    - Uses numpy's sliding_window_view for efficiency. When manually calculated,
+    it is much slower.
+    """
+    N = len(data)
+    num_windows = N - window_size + 1
+
+    results = np.zeroes(num_windows)
+    windows = sliding_window_view(data, window_shape=window_size)
+    for i in range(num_windows):
+        results[i] = np.nanmean(windows[i])
+    return results
 
 
 ########## Temporal measures: largely influenced by Goh & Barbasi (2008) and Altmann et al. (2009)
