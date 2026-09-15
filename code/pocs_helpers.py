@@ -11,7 +11,8 @@ import numpy as np
 import pandas as pd
 from numpy.lib.stride_tricks import sliding_window_view
 from scipy import stats
-from utils import get_word_happiness_labmt
+
+from utils import *
 
 # Globals
 
@@ -60,18 +61,6 @@ def read_text_file_as_list(file_path: str) -> list:
     with open(file_path, 'r') as f:
         text_list = f.read().splitlines()
     return text_list
-
-
-def slice_into_windows(time_series_text_tokens: list, window_size: int) -> list:
-    """Slice a list of text tokens (in time series order) into windows
-    according to a window size.
-
-    Args:
-    time_series_text_tokens: a list of tokens in chronological/time series order.
-    window_size: number of tokens to include in window.
-    """
-    return [time_series_text_tokens[i:i + window_size]
-            for i in range(0, len(time_series_text_tokens), window_size)]
 
 
 def clean_and_tokenize(long_txt: str) -> list:
@@ -246,6 +235,30 @@ def shifting_window_calc(data: np.array, window_size: int) -> np.array:
     for i in range(num_windows):
         results[i] = np.nanmean(windows[i])
     return results
+
+
+def fill_ousy(row: dict) -> str:
+    """Finds an ousiometer dictionary score for a given word.
+
+    Note: One can use a POS processor like Stanza to retrieve lemmas. Using lemmas,
+    one can map either the word or lemma to ousiometer dict words to increase the
+    proportion of matches in the dict.
+    """
+    current_ousy = OUSY.get(row['text'], 0)
+    # if not row['lemma_same'] and current_ousy == 0:
+    #     # print('no PSD and lemma IS diff')
+    #     return OUSY.get(row['lemma'], 0)
+    return current_ousy
+
+
+def analyze_ousiometry(df: pd.DataFrame) -> pd.DataFrame:
+    """Maps all given words to ousiometer scores.
+    """
+    df['pds'] = df.apply(lambda row: fill_ousy(row), axis=1)
+    df['pds'] = df['pds'].replace(0, np.nan)
+    # this expands the pds dict to columns
+    df = df.join(pd.json_normalize(df['pds']))
+    return df
 
 
 ########## Temporal measures: largely influenced by Goh & Barbasi (2008) and Altmann et al. (2009)

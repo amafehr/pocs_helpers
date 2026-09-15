@@ -3,6 +3,18 @@
 import pandas as pd
 import requests
 
+OUSY_PATH = f"../../data/ousiometry_data_augmented.tsv"
+
+# build ousiometer scores
+ousy_df = pd.read_csv(OUSY_PATH, sep='\t')
+ousy_dict = ousy_df[['word', 'power', 'danger', 'structure']].to_dict(orient='records')
+OUSY = {}
+for row in ousy_dict:
+    OUSY[row['word']] = {'power': row['power'],
+                         'danger': row['danger'],
+                         'structure': row['structure']
+                         }
+
 
 def get_word_happiness_labmt(
         language_version_link: str = "https://hedonometer.org/api/v1/words/?format=json&wordlist__title=labMT-en-v2"
@@ -23,3 +35,7 @@ def get_word_happiness_labmt(
     df_tidy = df[['rank', 'word', 'word_english', 'happs', 'stdDev']]
 
     return df_tidy
+
+
+
+
