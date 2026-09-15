@@ -1,5 +1,4 @@
 """Common helper functions for complex systems analyses."""
-# TODO: more robust documentation
 
 import re
 import urllib.request
@@ -230,7 +229,7 @@ def shifting_window_calc(data: np.array, window_size: int) -> np.array:
     N = len(data)
     num_windows = N - window_size + 1
 
-    results = np.zeroes(num_windows)
+    results = np.zeros(num_windows)
     windows = sliding_window_view(data, window_shape=window_size)
     for i in range(num_windows):
         results[i] = np.nanmean(windows[i])
