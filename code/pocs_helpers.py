@@ -260,6 +260,36 @@ def analyze_ousiometry(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def cosine_sim(a, b):
+    """Calculate cosine similarity (weighted dot product)."""
+    cos = np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+    return np.round(cos, 2)
+
+
+def radius_gyration(M: np.ndarray) -> np.ndarray:
+    """
+    Provides matrix of distances (K) from an axis at which the body's mass can be
+    considered concentrated.
+
+    Notes:
+    - larger K indicates the mass is further from the axis of rotation.
+    Works for: (D, n) -> returns scalar, (D, n, z_runs) -> returns (z_runs,)
+    """
+    # Step 1: Define your matrix (input M)
+    # Step 2: Compute the centroid (mean along columns)
+    centroid = np.mean(M, axis=1, keepdims=True)
+    # Step 3: Subtract centroid to get differences
+    differences = M - centroid
+    # Step 4: Compute squared distances of each point to the centroid
+    squared_distances = np.sum(differences ** 2, axis=0)
+    # Step 5: Compute the mean of the squared distances
+    mean_squared_distance = np.mean(squared_distances, axis=0)
+    # Step 6: Take square root to get the radius of gyration
+    radius_of_gyration = np.sqrt(mean_squared_distance)
+
+    return radius_of_gyration
+
+
 ########## Temporal measures: largely influenced by Goh & Barbasi (2008) and Altmann et al. (2009)
 
 
@@ -361,7 +391,7 @@ def coef_of_variation(data):
 
 # TODO: generalize this and change col names
 def plot_size_rank(df: pd.DataFrame, color: str = 'blue'):
-    """Plot size rank.
+    """Produces a size-rank plot.
 
     Args:
     df: a dataframe containing the columns 'log_rank_ties' and 'log_size'
@@ -374,16 +404,30 @@ def plot_size_rank(df: pd.DataFrame, color: str = 'blue'):
     )
     plt.xlabel('Log$_{10}$ (rank of words)')
     plt.ylabel('Log$_{10}$ (frequency of words)')
-    # plt.title('Size-rank plot')
+    # plt.savefig('zipf_size_rank_plot.pdf')
+    plt.show()
+
+
+def heaps_plot(list_of_tokens: list) -> None:
+    """Plot Heaps' law."""
+    plt.figure(figsize=(5, 4))
+
+    total_words, unique_words = heaps_from_text(list_of_tokens)
+    plt.plot(np.log10(total_words), np.log10(unique_words), alpha=0.5)
+    plt.xlabel('Log$_{10}$ Total types', size=14)
+    plt.ylabel('Log$_{10}$ Unique types', size=14)
+    plt.xticks(size=14)
+    plt.yticks(size=14)
+    plt.subplots_adjust(left=0.2, right=0.9, bottom=0.18, top=0.98)
+    # plt.savefig(f'heaps_law_plot.pdf')
+    plt.show()
 
 
 
 # TODO:
 # add some text manipulations
-# heaps law function (take funcs from convo_analyzer--current paper in progress)
-# add ways we explore/view raw data, such as:
+# add ways we explore/view raw text data, such as:
     # Maybe 2-3 gram and cut it off at top 50 phrases showing up
-# yule coefficients of 2 bodies (we did this in Dsci but not sure if it's good practice)
 # SVD end-to-end example (matrix-ify, investigate results, visualize top contributors by axis and pole)
 # distribution exploration (battery of ways to look at)
 # CDF
